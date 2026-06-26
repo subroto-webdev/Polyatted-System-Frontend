@@ -5,12 +5,43 @@ import { useAuth } from '../context/AuthContext';
 import Icon from '../components/common/Icon';
 import api from '../utils/api';
 
+
+function TypeWriter({ text, delay = 0, speed = 40 }) {
+  const [displayed, setDisplayed] = useState('');
+  const [started, setStarted] = useState(false);
+
+  React.useEffect(() => {
+    const startTimer = setTimeout(() => {
+      setStarted(true);
+    }, delay * 1000);
+    return () => clearTimeout(startTimer);
+  }, [delay]);
+
+  React.useEffect(() => {
+    if (!started) return;
+    if (displayed.length >= text.length) return;
+    const timer = setTimeout(() => {
+      setDisplayed(text.slice(0, displayed.length + 1));
+    }, speed);
+    return () => clearTimeout(timer);
+  }, [started, displayed, text, speed]);
+
+  return (
+    <span>
+      {displayed}
+      {started && displayed.length < text.length && (
+        <span style={{ animation: 'blink 0.7s step-end infinite', opacity: 1 }}>|</span>
+      )}
+    </span>
+  );
+}
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [activeRole, setActiveRole] = useState('student');
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackForm, setFeedbackForm] = useState({ name: '', email: '', message: '' });
@@ -50,130 +81,248 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <div className="auth-logo-icon">
-            <Icon name="school" size={28} />
-          </div>
-          <h1 className="auth-title">PolyAttend</h1>
-          <p className="auth-sub">Polytechnic Attendance Management System</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#060c18] px-5 py-8 gap-7 relative overflow-hidden">
+      <style>{`
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(-14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+`}</style>
+      {/* Ambient orbs */}
+      <div className="absolute -top-40 -left-24 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(20,184,166,0.09) 0%, transparent 70%)' }} />
+      <div className="absolute -bottom-32 -right-16 w-80 h-80 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)' }} />
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)',
+          backgroundSize: '44px 44px'
+        }} />
+
+      {/* Institute Header */}
+      {/* Institute Header */}
+      <div className="text-center relative z-10 max-w-lg">
+        <div className="inline-flex items-center gap-1.5 bg-teal-500/10 border border-teal-500/25 text-teal-300 text-[10px] font-bold tracking-[1.8px] px-3.5 py-1.5 rounded-full mb-4 uppercase"
+          style={{ animation: 'fadeUp 0.5s ease both' }}>
+          <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          OFFICIAL PORTAL
+        </div>
+
+        <h1 className="text-white font-black text-2xl sm:text-3xl leading-tight tracking-tight mb-2"
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <TypeWriter text="Thakurgaon Polytechnic Institute" delay={0.6} speed={35} />
+        </h1>
+
+        <p className="text-teal-300 text-[11px] font-bold tracking-[2.5px] uppercase mb-2">
+          <TypeWriter text="STUDENT ATTENDANCE LOGIN PORTAL" delay={1.8} speed={40} />
+        </p>
+
+        <p className="text-white/40 text-[13px]">
+          <TypeWriter text="ঠাকুরগাঁও পলিটেকনিক ইন্সটিটিউট — ডিজিটাল উপস্থিতি ব্যবস্থাপনা" delay={3.0} speed={30} />
+        </p>
+      </div>
+
+      {/* Login Card */}
+      <div className="relative z-10 w-full max-w-[410px] rounded-[18px] p-7"
+        style={{
+          background: 'rgba(9,18,32,0.96)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          borderTopColor: 'rgba(45,212,191,0.12)',
+          boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)'
+        }}>
+
+        {/* Card Title */}
+        <div className="text-center mb-6">
+          <h2 className="text-teal-300 text-[13px] font-extrabold tracking-[2.5px] mb-1.5"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            LOGIN PORTAL
+          </h2>
+          <p className="text-white/40 text-[13px]">আপনার account দিয়ে login করুন</p>
+        </div>
+
+        {/* Role Tabs */}
+        <div className="flex p-1 rounded-xl mb-6 gap-4"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          {[
+            { key: 'student', label: '🎓 STUDENT' },
+            { key: 'teacher', label: '👨‍🏫 TEACHER' },
+          ].map(r => (
+            <button
+              key={r.key}
+              type="button"
+              onClick={() => setActiveRole(r.key)}
+              className={`flex-1 py-2.5 rounded-[9px] text-[11px] font-bold tracking-[0.8px] transition-all duration-200 border ${activeRole === r.key
+
+                }`}
+              style={activeRole === r.key ? {
+                background: 'linear-gradient(135deg, rgba(22,163,74,0.2), rgba(74,222,128,0.1))',
+                boxShadow: '0 2px 14px rgba(22,163,74,0.12)'
+              } : {}}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
+          {/* Email */}
+          <div className="mb-4 relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 flex pointer-events-none z-10">
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </span>
             <input
-              className="form-input"
               type="email"
-              placeholder="your@email.edu"
+              placeholder="Email"
               value={form.email}
               onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
               autoComplete="email"
               autoFocus
+              className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/10 border border-white/30 text-white text-sm outline-none transition-all duration-300 placeholder:text-white/40 hover:border-emerald-500 hover:bg-emerald-500/10 focus:bg-emerald-500/15 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+
             />
           </div>
 
-          <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
-              <Link to="/forgot-password" style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
-                Forgot Password?
-              </Link>
-            </div>
-            <div style={{ position: 'relative' }}>
-              <input
-                className="form-input"
-                type={showPass ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={form.password}
-                onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                autoComplete="current-password"
-                style={{ paddingRight: 42 }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass(p => !p)}
-                style={{
-                  position: 'absolute', right: 10, top: '50%',
-                  transform: 'translateY(-50%)', background: 'none',
-                  border: 'none', cursor: 'pointer', color: 'var(--txt3)'
-                }}
-              >
-                <Icon name="eye" size={16} />
-              </button>
-            </div>
+          {/* Password */}
+          <div className="mb-3 relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 flex pointer-events-none z-10">
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input
+              type={showPass ? 'text' : 'password'}
+              placeholder="Password"
+              value={form.password}
+              onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+              autoComplete="current-password"
+              className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/5 border border-white/25 text-white text-sm outline-none transition-all duration-200 placeholder:text-white/38 hover:border-emerald-500/60 hover:bg-emerald-500/8 focus:bg-emerald-500/10 focus:border-emerald-400 focus:shadow-[0_0_0_2px_rgba(52,211,153,0.2)]"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPass(p => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors p-1 rounded"
+            >
+              <Icon name="eye" size={15} />
+            </button>
           </div>
 
-          <button className="btn-primary" type="submit" disabled={loading} style={{ marginTop: 4 }}>
-            {loading ? <><div className="spinner spinner-sm" /> লগইন হচ্ছে...</> : 'Sign In →'}
+          {/* Forgot */}
+          <div className="text-right mb-5">
+            <Link to="/forgot-password" className="text-teal-300/75 hover:text-teal-300 text-[12px] font-semibold no-underline transition-colors">
+              Forgot Password?
+            </Link>
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 rounded-[9px] text-white text-[15px] font-bold flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
+            style={{
+              background: 'linear-gradient(135deg, #16a34a, #22c55e)',
+              boxShadow: '0 4px 20px rgba(22,163,74,0.3)',
+              fontFamily: 'inherit'
+            }}
+          >
+            {loading
+              ? <><div className="spinner spinner-sm" style={{ borderColor: 'rgba(255,255,255,0.25)', borderTopColor: '#fff' }} /> লগইন হচ্ছে...</>
+              : <>🔑 Login করুন</>}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: 'var(--txt2)' }}>
+        {/* Register link */}
+        <p className="text-center text-[13px] text-white/38 mt-5">
           নতুন account?{' '}
-          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+          <Link to="/register" className="text-green-400 font-bold no-underline hover:text-green-300 transition-colors">
             Register করুন
           </Link>
         </p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+        {/* Feedback button */}
+        <div className="flex justify-center mt-4">
           <button
             type="button"
             onClick={() => setShowFeedbackModal(true)}
+            className="flex items-center gap-2 text-white/60 hover:text-white/90 text-[11px] font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
             style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--primary)', fontSize: 12, fontWeight: 600,
-              display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+              fontFamily: 'inherit'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.10)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.22)';
+              e.currentTarget.style.boxShadow = '0 6px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)';
             }}
           >
-            <Icon name="chat" size={14} /> Need Help? Give Feedback
+            <Icon name="chat" size={12} />
+            <span>Need Help?</span>
+            <span className="text-emerald-400">Give Feedback</span>
           </button>
         </div>
-      </div>
 
-      {/* Feedback Modal */}
-      {showFeedbackModal && (
-        <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setShowFeedbackModal(false)}>
-          <div className="modal-sheet" style={{ maxWidth: 420 }}>
-            <div className="modal-handle" />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <h3 className="modal-title" style={{ marginBottom: 0 }}>Need Help or Have Feedback?</h3>
-              <button onClick={() => setShowFeedbackModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--txt3)', display: 'flex', padding: 4 }}>
-                <Icon name="close" size={18} />
-              </button>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--txt2)', marginBottom: 16 }}>লগইন সমস্যা বা কোনো মতামত থাকলে আমাদের জানান।</p>
-
-            <form onSubmit={handleFeedbackSubmit}>
-              <div className="form-group">
-                <label className="form-label">আপনার নাম</label>
-                <input type="text" required className="form-input" placeholder="John Doe"
-                  value={feedbackForm.name} onChange={e => setFeedbackForm(p => ({ ...p, name: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">ইমেইল এড্রেস</label>
-                <input type="email" required className="form-input" placeholder="john@example.com"
-                  value={feedbackForm.email} onChange={e => setFeedbackForm(p => ({ ...p, email: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">আপনার মেসেজ</label>
-                <textarea required rows={4} className="form-input"
-                  placeholder="আপনার সমস্যা বা মতামত এখানে লিখুন..."
-                  style={{ resize: 'none', height: 'auto' }}
-                  value={feedbackForm.message} onChange={e => setFeedbackForm(p => ({ ...p, message: e.target.value }))} />
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn-secondary" onClick={() => setShowFeedbackModal(false)}>বাতিল</button>
-                <button type="submit" className="btn-primary" disabled={feedbackLoading}>
-                  {feedbackLoading ? <><div className="spinner spinner-sm" /> জমা হচ্ছে...</> : 'ফিডব্যাক জমা দিন'}
+        {/* Feedback Modal */}
+        {showFeedbackModal && (
+          <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && setShowFeedbackModal(false)}>
+            <div className="modal-sheet" style={{ maxWidth: 420 }}>
+              <div className="modal-handle" />
+              <div className="flex justify-between items-center mb-1">
+                <h3 className="modal-title" style={{ marginBottom: 0 }}>Need Help or Have Feedback?</h3>
+                <button onClick={() => setShowFeedbackModal(false)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--txt3)', display: 'flex', padding: 4 }}>
+                  <Icon name="close" size={18} />
                 </button>
               </div>
-            </form>
+              <p className="text-[13px] text-[var(--txt2)] mb-4">লগইন সমস্যা বা কোনো মতামত থাকলে আমাদের জানান।</p>
+              <form onSubmit={handleFeedbackSubmit}>
+                <div className="form-group">
+                  <label className="form-label">আপনার নাম</label>
+                  <input type="text" required className="form-input" placeholder="John Doe"
+                    value={feedbackForm.name} onChange={e => setFeedbackForm(p => ({ ...p, name: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">ইমেইল এড্রেস</label>
+                  <input type="email" required className="form-input" placeholder="john@example.com"
+                    value={feedbackForm.email} onChange={e => setFeedbackForm(p => ({ ...p, email: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">আপনার মেসেজ</label>
+                  <textarea required rows={4} className="form-input"
+                    placeholder="আপনার সমস্যা বা মতামত এখানে লিখুন..."
+                    style={{ resize: 'none', height: 'auto' }}
+                    value={feedbackForm.message} onChange={e => setFeedbackForm(p => ({ ...p, message: e.target.value }))} />
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn-secondary" onClick={() => setShowFeedbackModal(false)}>বাতিল</button>
+                  <button type="submit" className="btn-primary" disabled={feedbackLoading}>
+                    {feedbackLoading ? <><div className="spinner spinner-sm" /> জমা হচ্ছে...</> : 'ফিডব্যাক জমা দিন'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
