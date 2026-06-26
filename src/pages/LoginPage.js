@@ -81,22 +81,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#060c18] px-5 py-8 gap-7 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center px-5 py-8 gap-7 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1f0f 40%, #071a0a 70%, #060c18 100%)' }}>
       <style>{`
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(-14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(-14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
 `}</style>
       {/* Ambient orbs */}
       <div className="absolute -top-40 -left-24 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(20,184,166,0.09) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(20,184,166,0.15) 0%, transparent 70%)' }} />
       <div className="absolute -bottom-32 -right-16 w-80 h-80 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(22,163,74,0.18) 0%, transparent 70%)' }} />
+      <div className="absolute top-1/2 -left-20 w-72 h-72 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)', transform: 'translateY(-50%)' }} />
 
       {/* Grid overlay */}
       <div className="absolute inset-0 pointer-events-none"
@@ -136,7 +139,8 @@ export default function LoginPage() {
           background: 'rgba(9,18,32,0.96)',
           border: '1px solid rgba(255,255,255,0.07)',
           borderTopColor: 'rgba(45,212,191,0.12)',
-          boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)'
+          boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+          animation: 'cardColorShift 6s ease-in-out infinite'
         }}>
 
         {/* Card Title */}
@@ -323,6 +327,6 @@ export default function LoginPage() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }
