@@ -246,8 +246,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Register link */}
-        <p className="text-center text-[13px] text-white/38 mt-5">
+        <p className="text-center text-[13px] text-white/80 mt-5">
           নতুন account?{' '}
           <Link to="/register" className="text-green-400 font-bold no-underline hover:text-green-300 transition-colors">
             Register করুন
