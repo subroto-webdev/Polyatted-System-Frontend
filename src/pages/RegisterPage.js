@@ -299,8 +299,8 @@ export default function RegisterPage() {
               <div style={{ height: 1, background: 'var(--border)', margin: '14px 0' }} />
               <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 12 }}>Student Information</div>
               <div className="form-group">
-                <label className="form-label">Student ID *</label>
-                <input className="form-input" placeholder="যেমন: CST-21-001" value={form.studentId} onChange={set('studentId')} required />
+                <label className="form-label">Student Roll</label>
+                <input className="form-input" placeholder="যেমন: 800768" value={form.studentId} onChange={set('studentId')} required />
               </div>
               <div className="form-group">
                 <label className="form-label">Department *</label>

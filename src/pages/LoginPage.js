@@ -163,7 +163,7 @@ export default function LoginPage() {
               key={r.key}
               type="button"
               onClick={() => setActiveRole(r.key)}
-              className={`flex-1 py-2.5 rounded-[9px] text-[11px] font-bold tracking-[0.8px] transition-all duration-200 border ${activeRole === r.key
+              className={`flex-1 py-2.5 rounded-[9px] text-white/100 text-[11px] font-bold tracking-[0.8px] transition-all duration-200 border ${activeRole === r.key
 
                 }`}
               style={activeRole === r.key ? {
@@ -246,7 +246,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-[13px] text-white/80 mt-5">
+        <p className="text-center text-[13px] text-white/100 mt-5">
           নতুন account?{' '}
           <Link to="/register" className="text-green-400 font-bold no-underline hover:text-green-300 transition-colors">
             Register করুন
@@ -279,7 +279,7 @@ export default function LoginPage() {
             }}
           >
             <Icon name="chat" size={12} />
-            <span>Need Help?</span>
+            <span className='text-white/100'>Need Help?</span>
             <span className="text-emerald-400">Give Feedback</span>
           </button>
         </div>
